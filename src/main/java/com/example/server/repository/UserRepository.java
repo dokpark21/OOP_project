@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.server.repository;
 
 import com.example.comicserver.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
