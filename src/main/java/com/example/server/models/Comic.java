@@ -5,17 +5,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Set;
-
 @Data
-@Document(collection = "users")
-public class User {
+@Document(collection = "comics")
+public class Comic {
     @Id
     private String id;
-    private String username;
-    private String password;
-    private String email;
+    private String title;
+    private String description;
     
     @DBRef
-    private Set<Role> roles;
+    private User user;
 }
