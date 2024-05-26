@@ -1,4 +1,4 @@
-package com.example.comicserver.service;
+package com.example.demo.service;
 
 import okhttp3.*;
 import org.springframework.stereotype.Service;

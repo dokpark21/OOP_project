@@ -1,14 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.comicserver.entity.Comic;
-import com.example.comicserver.service.ComicService;
+import com.example.demo.model.Comic;
+import com.example.demo.service.ComicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/comics")
+@RequestMapping("/api/comics")
 public class ComicController {
     @Autowired
     private ComicService comicService;
@@ -26,5 +26,16 @@ public class ComicController {
     @GetMapping("/{id}")
     public Comic getComicById(@PathVariable String id) {
         return comicService.getComicById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Comic updateComic(@PathVariable String id, @RequestBody Comic comic) {
+        return comicService.updateComic(id, comic);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteComic(@PathVariable String id) {
+        comicService.deleteComic(id);
+        return "Comic deleted successfully";
     }
 }

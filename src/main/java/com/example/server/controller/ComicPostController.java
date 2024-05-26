@@ -1,14 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.comicserver.entity.ComicPost;
-import com.example.comicserver.service.ComicPostService;
+import com.example.demo.model.ComicPost;
+import com.example.demo.service.ComicPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/comicposts")
+@RequestMapping("/api/comicposts")
 public class ComicPostController {
     @Autowired
     private ComicPostService comicPostService;
@@ -23,8 +23,24 @@ public class ComicPostController {
         return comicPostService.getAllComicPosts();
     }
 
+    @GetMapping("/comic/{comicId}")
+    public List<ComicPost> getComicPostsByComicId(@PathVariable String comicId) {
+        return comicPostService.getComicPostsByComicId(comicId);
+    }
+
     @GetMapping("/{id}")
     public ComicPost getComicPostById(@PathVariable String id) {
         return comicPostService.getComicPostById(id);
+    }
+
+    @PutMapping("/{id}")
+    public ComicPost updateComicPost(@PathVariable String id, @RequestBody ComicPost comicPost) {
+        return comicPostService.updateComicPost(id, comicPost);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteComicPost(@PathVariable String id) {
+        comicPostService.deleteComicPost(id);
+        return "Comic post deleted successfully";
     }
 }
