@@ -1,4 +1,4 @@
-package com.example.demo.models;
+package com.example.server.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -15,7 +15,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    
+
     @DBRef
     private Set<Role> roles;
 }

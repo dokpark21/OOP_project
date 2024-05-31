@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package com.example.server.service;
 
-import com.example.demo.model.ComicPost;
-import com.example.demo.repository.ComicPostRepository;
+import com.example.server.model.ComicPost;
+import com.example.server.repository.ComicPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

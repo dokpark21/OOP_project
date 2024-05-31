@@ -1,6 +1,6 @@
-package com.example.demo.controller;
+package com.example.server.controller;
 
-import com.example.demo.service.DalleService;
+import com.example.server.service.DalleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

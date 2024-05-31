@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.server.service;
 
 import okhttp3.*;
 import org.springframework.stereotype.Service;
@@ -14,13 +14,14 @@ public class DalleService {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"prompt\":\"" + prompt + "\",\"n\":1,\"size\":\"1024x1024\"}");
+        RequestBody body = RequestBody.create(mediaType,
+                "{\"prompt\":\"" + prompt + "\",\"n\":1,\"size\":\"1024x1024\"}");
         Request request = new Request.Builder()
-            .url(API_URL)
-            .post(body)
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "Bearer " + API_KEY)
-            .build();
+                .url(API_URL)
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .build();
 
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {

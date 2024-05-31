@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.server.repository;
 
-import com.example.comicserver.entity.Role;
+import com.example.server.model.Role;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface RoleRepository extends MongoRepository<Role, String> {

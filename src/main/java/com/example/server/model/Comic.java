@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.server.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -14,10 +14,10 @@ public class Comic {
     private String id;
     private String title;
     private String description;
-    
+
     @DBRef
     private List<ComicPost> comicPosts;
-    
+
     @DBRef
     private User user;
 }

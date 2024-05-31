@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.server.repository;
 
-import com.example.demo.model.ComicPost;
+import com.example.server.model.ComicPost;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

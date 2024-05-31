@@ -1,13 +1,14 @@
-package com.example.demo.models;
+package com.example.server.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document(collection = "roles")
-public class Role {
+@Document(collection = "blacklistedTokens")
+public class BlacklistedToken {
     @Id
     private String id;
-    private String name;
+    private String token;
+    private long expiration;
 }
