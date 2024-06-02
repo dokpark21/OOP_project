@@ -1,35 +1,49 @@
 package com.example.server.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 @Service
 public class DalleService {
-    private static final String API_URL = "https://api.openai.com/v1/images/generations";
-    private static final String API_KEY = "your-openai-api-key";
+
+    private static final String OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
+    private final OkHttpClient httpClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${openai.api.key}")
+    private String openAiApiKey;
+
+    public DalleService() {
+        this.httpClient = new OkHttpClient();
+        this.objectMapper = new ObjectMapper();
+    }
 
     public String generateImage(String prompt) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType,
-                "{\"prompt\":\"" + prompt + "\",\"n\":1,\"size\":\"1024x1024\"}");
-        Request request = new Request.Builder()
-                .url(API_URL)
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer " + API_KEY)
+        RequestBody requestBody = new FormBody.Builder()
+                .add("prompt", prompt)
+                .add("n", "1")
+                .add("size", "1024x1024")
                 .build();
 
-        Response response = client.newCall(request).execute();
-        if (response.isSuccessful()) {
+        Request request = new Request.Builder()
+                .url(OPENAI_API_URL)
+                .post(requestBody)
+                .addHeader("Authorization", "Bearer " + openAiApiKey)
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+
             String responseBody = response.body().string();
-            // Parse the response and extract the image URL
-            return responseBody; // Simplified for brevity
-        } else {
-            throw new IOException("Unexpected code " + response);
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            return jsonNode.get("data").get(0).get("url").asText();
         }
     }
 }

@@ -8,12 +8,13 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/dalle")
-public class DalleController {
+public class DaleController {
+
     @Autowired
     private DalleService dalleService;
 
     @PostMapping("/generate")
-    public String generateImage(@RequestBody String prompt) {
+    public String generateImage(@RequestParam String prompt) {
         try {
             return dalleService.generateImage(prompt);
         } catch (IOException e) {
