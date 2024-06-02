@@ -15,7 +15,7 @@ public class DalleService {
     private final OkHttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${OPEN_AI_KEY}")
+    @Value("${openai.api.key}")
     private String openAiApiKey;
 
     public DalleService() {
