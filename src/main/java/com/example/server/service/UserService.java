@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,8 +31,8 @@ public class UserService implements UserDetailsService {
     private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProperties jwtProperties,
-            TokenBlacklistRepository tokenBlacklistRepository) {
+    public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder,
+            JwtProperties jwtProperties, TokenBlacklistRepository tokenBlacklistRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProperties = jwtProperties;
