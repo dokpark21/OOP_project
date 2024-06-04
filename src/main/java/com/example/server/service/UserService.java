@@ -10,7 +10,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,8 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -56,9 +53,8 @@ public class UserService implements UserDetailsService {
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser != null) {
             existingUser.setUsername(user.getUsername());
-            existingUser.setPassword(user.getPassword());
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
             existingUser.setEmail(user.getEmail());
-            existingUser.setRoles(user.getRoles());
             return userRepository.save(existingUser);
         }
         return null;
@@ -103,12 +99,10 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
 
-        // Convert user roles to GrantedAuthority
-        Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toSet());
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                authorities);
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .authorities("USER")
+                .build();
     }
 }
