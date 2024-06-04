@@ -24,11 +24,11 @@ public class DalleService {
     }
 
     public String generateImage(String prompt) throws IOException {
-        RequestBody requestBody = new FormBody.Builder()
-                .add("prompt", prompt)
-                .add("n", "1")
-                .add("size", "1024x1024")
-                .build();
+        // JSON request body
+        String json = String.format("{\"prompt\": \"%s\", \"n\": 1, \"size\": \"1024x1024\"}", prompt);
+
+        RequestBody requestBody = RequestBody.create(
+                json, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
                 .url(OPENAI_API_URL)
