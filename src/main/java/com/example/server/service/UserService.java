@@ -8,6 +8,7 @@ import com.example.server.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProperties jwtProperties;
     private final TokenBlacklistRepository tokenBlacklistRepository;
+    private final Key key;
 
     @Autowired
     public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder,
@@ -34,6 +37,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.jwtProperties = jwtProperties;
         this.tokenBlacklistRepository = tokenBlacklistRepository;
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 강력한 키 생성
     }
 
     public User saveUser(User user) {
@@ -53,7 +57,7 @@ public class UserService implements UserDetailsService {
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser != null) {
             existingUser.setUsername(user.getUsername());
-            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            existingUser.setPassword(user.getPassword());
             existingUser.setEmail(user.getEmail());
             return userRepository.save(existingUser);
         }
@@ -65,8 +69,9 @@ public class UserService implements UserDetailsService {
     }
 
     public void logout(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtProperties.getSecret())
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
         long expiration = claims.getExpiration().getTime();
@@ -84,7 +89,7 @@ public class UserService implements UserDetailsService {
                 .setSubject(user.getUsername())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
+                .signWith(key) // 강력한 키 사용
                 .compact();
     }
 
@@ -98,7 +103,6 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
