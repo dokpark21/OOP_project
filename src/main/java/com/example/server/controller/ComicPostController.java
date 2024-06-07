@@ -1,6 +1,5 @@
 package com.example.server.controller;
 
-import com.example.server.model.Comic;
 import com.example.server.model.ComicPost;
 import com.example.server.service.ComicPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,28 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/comics")
-public class ComicController {
-
+@RequestMapping("/api/comicposts")
+public class ComicPostController {
     private final ComicPostService comicPostService;
 
     @Autowired
-    public ComicController(ComicPostService comicPostService) {
+    public ComicPostController(ComicPostService comicPostService) {
         this.comicPostService = comicPostService;
     }
 
     @PostMapping
-    public ResponseEntity<Comic> createComic(@RequestParam String title, @RequestParam String userId) {
-        try {
-            Comic comic = comicPostService.createComic(title, userId);
-            return new ResponseEntity<>(comic, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/{comicId}/scenes")
-    public ResponseEntity<ComicPost> createComicPost(@PathVariable String comicId, @RequestParam String description,
+    public ResponseEntity<ComicPost> createComicPost(@RequestParam String description,
+            @RequestParam String comicId,
             @RequestParam String userId) {
         try {
             ComicPost comicPost = comicPostService.createComicPost(description, comicId, userId);
@@ -41,7 +30,7 @@ public class ComicController {
     }
 
     @DeleteMapping("/{comicId}")
-    public ResponseEntity<HttpStatus> deleteComic(@PathVariable String comicId) {
+    public ResponseEntity<Void> deleteComic(@PathVariable String comicId) {
         try {
             comicPostService.deleteComic(comicId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
