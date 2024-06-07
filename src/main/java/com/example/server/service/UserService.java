@@ -7,7 +7,6 @@ import com.example.server.repository.UserRepository;
 import com.example.server.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -37,7 +36,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.jwtProperties = jwtProperties;
         this.tokenBlacklistRepository = tokenBlacklistRepository;
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512); // 강력한 키 생성
+        this.key = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS512); // 강력한 키 생성
     }
 
     public User saveUser(User user) {

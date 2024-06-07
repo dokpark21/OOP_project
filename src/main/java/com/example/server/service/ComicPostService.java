@@ -1,45 +1,71 @@
 package com.example.server.service;
 
+import com.example.server.model.Comic;
 import com.example.server.model.ComicPost;
 import com.example.server.repository.ComicPostRepository;
+import com.example.server.repository.ComicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class ComicPostService {
+
+    private final ComicPostRepository comicPostRepository;
+    private final ComicRepository comicRepository;
+    private final RestTemplate restTemplate;
+    private final String dalleControllerUrl = "http://localhost:8080/api/dalle/image";
+
     @Autowired
-    private ComicPostRepository comicPostRepository;
-
-    public ComicPost createComicPost(ComicPost comicPost) {
-        return comicPostRepository.save(comicPost);
+    public ComicPostService(ComicPostRepository comicPostRepository, ComicRepository comicRepository,
+            RestTemplate restTemplate) {
+        this.comicPostRepository = comicPostRepository;
+        this.comicRepository = comicRepository;
+        this.restTemplate = restTemplate;
     }
 
-    public List<ComicPost> getAllComicPosts() {
-        return comicPostRepository.findAll();
+    public Comic createComic(String title, String userId) {
+        Comic comic = new Comic();
+        comic.setTitle(title);
+        comic.setUserId(userId); // userId 설정
+        comic.setSceneIds(new ArrayList<>());
+        return comicRepository.save(comic);
     }
 
-    public List<ComicPost> getComicPostsByComicId(String comicId) {
-        return comicPostRepository.findByComicId(comicId);
-    }
+    public ComicPost createComicPost(String description, String comicId, String userId) {
+        // DalleController에 이미지 생성 요청
+        String imageUrl = restTemplate.postForObject(dalleControllerUrl, description, String.class);
 
-    public ComicPost getComicPostById(String id) {
-        return comicPostRepository.findById(id).orElse(null);
-    }
+        // ComicPost 객체 생성 및 저장
+        ComicPost comicPost = new ComicPost();
+        comicPost.setDescription(description);
+        comicPost.setImageUrl(imageUrl);
+        comicPost.setComicId(comicId);
+        comicPost.setUserId(userId); // userId 설정
+        ComicPost savedPost = comicPostRepository.save(comicPost);
 
-    public ComicPost updateComicPost(String id, ComicPost comicPost) {
-        ComicPost existingComicPost = comicPostRepository.findById(id).orElse(null);
-        if (existingComicPost != null) {
-            existingComicPost.setImageUrl(comicPost.getImageUrl());
-            existingComicPost.setDescription(comicPost.getDescription());
-            existingComicPost.setComicId(comicPost.getComicId());
-            return comicPostRepository.save(existingComicPost);
+        // Comic 엔티티 업데이트
+        Optional<Comic> comicOptional = comicRepository.findById(comicId);
+        if (comicOptional.isPresent()) {
+            Comic comic = comicOptional.get();
+            comic.getSceneIds().add(savedPost.getId());
+            comicRepository.save(comic);
         }
-        return null;
+
+        return savedPost;
     }
 
-    public void deleteComicPost(String id) {
-        comicPostRepository.deleteById(id);
+    public void deleteComic(String comicId) {
+        Optional<Comic> comicOptional = comicRepository.findById(comicId);
+        if (comicOptional.isPresent()) {
+            Comic comic = comicOptional.get();
+            for (String sceneId : comic.getSceneIds()) {
+                comicPostRepository.deleteById(sceneId);
+            }
+            comicRepository.deleteById(comicId);
+        }
     }
 }

@@ -1,46 +1,52 @@
 package com.example.server.controller;
 
+import com.example.server.model.Comic;
 import com.example.server.model.ComicPost;
 import com.example.server.service.ComicPostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/comicposts")
-public class ComicPostController {
+@RequestMapping("/api/comics")
+public class ComicController {
+
+    private final ComicPostService comicPostService;
+
     @Autowired
-    private ComicPostService comicPostService;
+    public ComicController(ComicPostService comicPostService) {
+        this.comicPostService = comicPostService;
+    }
 
     @PostMapping
-    public ComicPost createComicPost(@RequestBody ComicPost comicPost) {
-        return comicPostService.createComicPost(comicPost);
+    public ResponseEntity<Comic> createComic(@RequestParam String title, @RequestParam String userId) {
+        try {
+            Comic comic = comicPostService.createComic(title, userId);
+            return new ResponseEntity<>(comic, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @GetMapping
-    public List<ComicPost> getAllComicPosts() {
-        return comicPostService.getAllComicPosts();
+    @PostMapping("/{comicId}/scenes")
+    public ResponseEntity<ComicPost> createComicPost(@PathVariable String comicId, @RequestParam String description,
+            @RequestParam String userId) {
+        try {
+            ComicPost comicPost = comicPostService.createComicPost(description, comicId, userId);
+            return new ResponseEntity<>(comicPost, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @GetMapping("/comic/{comicId}")
-    public List<ComicPost> getComicPostsByComicId(@PathVariable String comicId) {
-        return comicPostService.getComicPostsByComicId(comicId);
-    }
-
-    @GetMapping("/{id}")
-    public ComicPost getComicPostById(@PathVariable String id) {
-        return comicPostService.getComicPostById(id);
-    }
-
-    @PutMapping("/{id}")
-    public ComicPost updateComicPost(@PathVariable String id, @RequestBody ComicPost comicPost) {
-        return comicPostService.updateComicPost(id, comicPost);
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteComicPost(@PathVariable String id) {
-        comicPostService.deleteComicPost(id);
-        return "Comic post deleted successfully";
+    @DeleteMapping("/{comicId}")
+    public ResponseEntity<HttpStatus> deleteComic(@PathVariable String comicId) {
+        try {
+            comicPostService.deleteComic(comicId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
