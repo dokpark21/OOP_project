@@ -1,5 +1,6 @@
 package com.example.server.service;
 
+import com.example.server.dto.DescriptionRequest;
 import com.example.server.model.Comic;
 import com.example.server.model.ComicPost;
 import com.example.server.repository.ComicPostRepository;
@@ -30,21 +31,23 @@ public class ComicPostService {
     public Comic createComic(String title, String userId) {
         Comic comic = new Comic();
         comic.setTitle(title);
-        comic.setUserId(userId); // userId 설정
+        comic.setUserId(userId);
         comic.setSceneIds(new ArrayList<>());
         return comicRepository.save(comic);
     }
 
     public ComicPost createComicPost(String description, String comicId, String userId) {
         // DalleController에 이미지 생성 요청
-        String imageUrl = restTemplate.postForObject(dalleControllerUrl, description, String.class);
+        DescriptionRequest request = new DescriptionRequest();
+        request.setPrompt(description);
+        String imageUrl = restTemplate.postForObject(dalleControllerUrl, request, String.class);
 
         // ComicPost 객체 생성 및 저장
         ComicPost comicPost = new ComicPost();
         comicPost.setDescription(description);
         comicPost.setImageUrl(imageUrl);
         comicPost.setComicId(comicId);
-        comicPost.setUserId(userId); // userId 설정
+        comicPost.setUserId(userId);
         ComicPost savedPost = comicPostRepository.save(comicPost);
 
         // Comic 엔티티 업데이트

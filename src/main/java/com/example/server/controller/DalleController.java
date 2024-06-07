@@ -1,12 +1,10 @@
 package com.example.server.controller;
 
+import com.example.server.dto.DescriptionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.theokanning.openai.service.OpenAiService;
 import com.theokanning.openai.image.CreateImageRequest;
@@ -24,26 +22,23 @@ public class DalleController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<?> generateImage(@RequestBody String prompt) {
+    public ResponseEntity<?> generateImage(@RequestBody DescriptionRequest request) {
         try {
-            String imageUrl = generatePicture(prompt);
+            String prompt = request.getPrompt();
+            if (prompt == null || prompt.isEmpty()) {
+                return new ResponseEntity<>("Prompt is required", HttpStatus.BAD_REQUEST);
+            }
+
+            CreateImageRequest imageRequest = CreateImageRequest.builder()
+                    .prompt(prompt)
+                    .n(1)
+                    .size("1024x1024")
+                    .build();
+            ImageResult result = openAiService.createImage(imageRequest);
+            String imageUrl = result.getData().get(0).getUrl();
             return new ResponseEntity<>(imageUrl, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error generating image: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private String generatePicture(String prompt) {
-        CreateImageRequest request = CreateImageRequest.builder()
-                .prompt(prompt)
-                .n(1)
-                .size("1024x1024")
-                .build();
-
-        ImageResult result = openAiService.createImage(request);
-        if (result == null || result.getData().isEmpty()) {
-            throw new RuntimeException("No image returned from OpenAI.");
-        }
-        return result.getData().get(0).getUrl();
     }
 }
