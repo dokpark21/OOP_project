@@ -1,5 +1,6 @@
 package com.example.server.controller;
 
+import com.example.server.dto.ComicPostRequest;
 import com.example.server.model.ComicPost;
 import com.example.server.service.ComicPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,11 @@ public class ComicPostController {
         this.comicPostService = comicPostService;
     }
 
-    @PostMapping
-    public ResponseEntity<ComicPost> createComicPost(@RequestParam String description,
-            @RequestParam String comicId,
-            @RequestParam String userId) {
+    @PostMapping("/create")
+    public ResponseEntity<ComicPost> createComicPost(@RequestBody ComicPostRequest request) {
         try {
-            ComicPost comicPost = comicPostService.createComicPost(description, comicId, userId);
+            ComicPost comicPost = comicPostService.createComicPost(request.getDescription(), request.getComicId(),
+                    request.getUserId());
             return new ResponseEntity<>(comicPost, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
