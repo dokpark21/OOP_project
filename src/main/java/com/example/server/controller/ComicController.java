@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/comics")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ComicController {
 
     private final ComicService comicService;
@@ -76,4 +77,13 @@ public class ComicController {
         }
     }
 
+    @GetMapping("/{comicId}/firstScene")
+    public ResponseEntity<ComicPost> getFirstScene(@PathVariable String comicId) {
+        try {
+            ComicPost firstScene = comicService.getFirstScene(comicId);
+            return new ResponseEntity<>(firstScene, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
