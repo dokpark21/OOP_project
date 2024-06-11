@@ -80,4 +80,19 @@ public class ComicService {
     public List<ComicPost> getComicScenes(String comicId) {
         return comicPostRepository.findByComicId(comicId);
     }
+
+    public ComicPost getFirstScene(String comicId) {
+        Optional<Comic> comicOptional = comicRepository.findById(comicId);
+        if (comicOptional.isPresent()) {
+            Comic comic = comicOptional.get();
+            if (!comic.getSceneIds().isEmpty()) {
+                String firstSceneId = comic.getSceneIds().get(0);
+                Optional<ComicPost> comicPostOptional = comicPostRepository.findById(firstSceneId);
+                if (comicPostOptional.isPresent()) {
+                    return comicPostOptional.get();
+                }
+            }
+        }
+        return null;
+    }
 }

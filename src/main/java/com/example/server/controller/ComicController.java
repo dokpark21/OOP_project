@@ -77,4 +77,13 @@ public class ComicController {
         }
     }
 
+    @GetMapping("/{comicId}/firstScene")
+    public ResponseEntity<ComicPost> getFirstScene(@PathVariable String comicId) {
+        try {
+            ComicPost firstScene = comicService.getFirstScene(comicId);
+            return new ResponseEntity<>(firstScene, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
