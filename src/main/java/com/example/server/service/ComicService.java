@@ -78,15 +78,6 @@ public class ComicService {
     }
 
     public List<ComicPost> getComicScenes(String comicId) {
-        Optional<Comic> comicOptional = comicRepository.findById(comicId);
-        if (comicOptional.isPresent()) {
-            Comic comic = comicOptional.get();
-            List<ComicPost> scenes = new ArrayList<>();
-            for (String sceneId : comic.getSceneIds()) {
-                comicPostRepository.findById(sceneId).ifPresent(scenes::add);
-            }
-            return scenes;
-        }
-        return new ArrayList<>();
+        return comicPostRepository.findByComicId(comicId);
     }
 }
