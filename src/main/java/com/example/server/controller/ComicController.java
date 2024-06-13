@@ -80,10 +80,15 @@ public class ComicController {
     @GetMapping("/{comicId}/firstScene")
     public ResponseEntity<ComicPost> getFirstScene(@PathVariable String comicId) {
         try {
-            ComicPost firstScene = comicService.getFirstScene(comicId);
-            return new ResponseEntity<>(firstScene, HttpStatus.OK);
+            List<ComicPost> scenes = comicService.getComicScenes(comicId);
+            if (!scenes.isEmpty()) {
+                return new ResponseEntity<>(scenes.get(0), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
