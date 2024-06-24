@@ -95,4 +95,12 @@ public class ComicService {
         }
         return null;
     }
+
+    public void deleteScene(String sceneId) {
+        comicPostRepository.deleteById(sceneId);
+    }
+
+    public List<ComicPost> getAcceptedScenes(String comicId) {
+        return comicPostRepository.findByComicIdAndAccepted(comicId, true);
+    }
 }

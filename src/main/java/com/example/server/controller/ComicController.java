@@ -91,4 +91,23 @@ public class ComicController {
         }
     }
 
+    @DeleteMapping("/scenes/{sceneId}")
+    public ResponseEntity<HttpStatus> deleteScene(@PathVariable String sceneId) {
+        try {
+            comicService.deleteScene(sceneId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{comicId}/acceptedScenes")
+    public ResponseEntity<List<ComicPost>> getAcceptedScenes(@PathVariable String comicId) {
+        try {
+            List<ComicPost> scenes = comicService.getAcceptedScenes(comicId);
+            return new ResponseEntity<>(scenes, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
