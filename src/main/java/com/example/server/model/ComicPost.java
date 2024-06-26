@@ -9,8 +9,9 @@ public class ComicPost {
     private String id;
     private String description;
     private String imageUrl;
-    private String comicId; // 어떤 만화에 속하는지 식별
-    private String userId; // 작가의 user ID 추가
+    private String comicId;
+    private String userId;
+    private boolean accepted; // accepted 필드 추가
 
     // Getters and Setters
     public String getId() {
@@ -51,5 +52,13 @@ public class ComicPost {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 }

@@ -49,6 +49,7 @@ public class ComicService {
         comicPost.setImageUrl(imageUrl);
         comicPost.setComicId(comicId);
         comicPost.setUserId(userId);
+        comicPost.setAccepted(true);
         ComicPost savedPost = comicPostRepository.save(comicPost);
 
         // Comic 엔티티 업데이트
@@ -94,5 +95,13 @@ public class ComicService {
             }
         }
         return null;
+    }
+
+    public void deleteScene(String sceneId) {
+        comicPostRepository.deleteById(sceneId);
+    }
+
+    public List<ComicPost> getAcceptedScenes(String comicId) {
+        return comicPostRepository.findByComicIdAndAccepted(comicId, true);
     }
 }
